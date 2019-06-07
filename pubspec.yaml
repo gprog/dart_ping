@@ -1,0 +1,9 @@
+name: dart_ping
+description: Tool for pinging remote hosts from Dart
+version: 1.0.0
+homepage: https://github.com/l7ssha/dart-ping
+author: Szymon Uglis <szymon.uglis@tuta.io>
+
+environment:
+  sdk: '>=2.0.0 <3.0.0'
+
