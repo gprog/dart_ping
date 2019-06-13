@@ -14,6 +14,9 @@ class PingInfo {
   Duration time;
 
   PingInfo._new(this.seq, this.ttl, this.time);
+
+  @override
+  String toString() => 'SEQ: $seq; TTL: $ttl; Duration: $time';
 }
 
 var _regexUnix = RegExp(r"icmp_seq=(\d+) ttl=(\d+) time=((\d+).?(\d+))");
@@ -34,8 +37,11 @@ StreamTransformer<String, PingInfo> _windowsTransformer = StreamTransformer.from
 });
 
 /// Pings host with [address]. Returns Stream with [PingInfo].
-Future<Stream<PingInfo>> ping(String address, {int times = 4, int packetSize = 64, int interval = 1}) async {
-  var process = await Process.start("ping", [address, "-c $times", "-s ${packetSize}", "-i $interval"]);
+Future<Stream<PingInfo>> ping(String address, {int times, int packetSize = 64, int interval = 1}) async {
+  List<String> args = [address, "-s ${packetSize}", "-i $interval"];
+  if (times != null) args.add('-c $times');
+  // TODO: windows sends 4 packets by default, have it set to infinite
+  var process = await Process.start("ping", args);
   var baseStream = process.stdout.transform(utf8.decoder).transform(LineSplitter());
 
   if(Platform.isWindows)
